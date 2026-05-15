@@ -4,7 +4,7 @@ import { authMiddleware } from '../middleware/auth.js';
 
 const router = express.Router();
 
-// Get all products for a user (both published and unpublished)
+
 router.get('/', authMiddleware, async (req, res) => {
     try {
         const products = await Product.find({ userId: req.userId }).sort({ createdAt: -1 });
@@ -15,7 +15,7 @@ router.get('/', authMiddleware, async (req, res) => {
     }
 });
 
-// Get published products
+
 router.get('/published', authMiddleware, async (req, res) => {
     try {
         const products = await Product.find({ userId: req.userId, isPublished: true }).sort({ createdAt: -1 });
@@ -26,7 +26,6 @@ router.get('/published', authMiddleware, async (req, res) => {
     }
 });
 
-// Get unpublished products
 router.get('/unpublished', authMiddleware, async (req, res) => {
     try {
         const products = await Product.find({ userId: req.userId, isPublished: false }).sort({ createdAt: -1 });
@@ -37,7 +36,6 @@ router.get('/unpublished', authMiddleware, async (req, res) => {
     }
 });
 
-// Create a new product
 router.post('/', authMiddleware, async (req, res) => {
     try {
         const {
@@ -80,7 +78,6 @@ router.post('/', authMiddleware, async (req, res) => {
     }
 });
 
-// Update a product
 router.put('/:productId', authMiddleware, async (req, res) => {
     try {
         const { productId } = req.params;
@@ -128,7 +125,6 @@ router.put('/:productId', authMiddleware, async (req, res) => {
     }
 });
 
-// Delete a product
 router.delete('/:productId', authMiddleware, async (req, res) => {
     try {
         const { productId } = req.params;
@@ -151,7 +147,6 @@ router.delete('/:productId', authMiddleware, async (req, res) => {
     }
 });
 
-// Publish/Unpublish a product
 router.patch('/:productId/publish', authMiddleware, async (req, res) => {
     try {
         const { productId } = req.params;

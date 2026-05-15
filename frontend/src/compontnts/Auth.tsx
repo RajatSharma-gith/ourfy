@@ -79,21 +79,21 @@ export function Auth({ onLoginSuccess }: AuthProps) {
 
     return (
         <div className="min-h-screen flex bg-gray-50">
-            {/* Left Panel */}
+
             <div className="hidden lg:flex w-1/2 relative overflow-hidden bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-50">
                 <div className="absolute top-6 left-8 flex items-center gap-2 z-10">
                     <span className="text-xl font-bold text-slate-800">Productr</span>
                     <span className="text-xl">🧡</span>
                 </div>
 
-                {/* Abstract 3D shapes background */}
+
                 <div className="absolute inset-0 flex items-center justify-center">
                     <div className="relative w-full h-full">
                         <div className="absolute top-20 left-20 w-64 h-64 bg-purple-200/40 rounded-full blur-3xl"></div>
                         <div className="absolute bottom-20 right-20 w-80 h-80 bg-indigo-200/40 rounded-full blur-3xl"></div>
                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                            <div className="w-72 h-96 bg-gradient-to-b from-orange-400 to-orange-600 rounded-[2rem] shadow-2xl flex flex-col items-center justify-end p-6 relative overflow-hidden">
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                            <div className="w-72 h-96 bg-linear-to-b from-orange-400 to-orange-600 rounded-4xl shadow-2xl flex flex-col items-center justify-end p-6 relative overflow-hidden">
+                                <div className="absolute inset-0 bg-linear-to-t from-black/40 to-transparent"></div>
                                 <div className="relative z-10 text-white text-center">
                                     <p className="text-sm font-medium opacity-90">Uplist your</p>
                                     <p className="text-sm font-medium opacity-90">product to market</p>
@@ -111,7 +111,7 @@ export function Auth({ onLoginSuccess }: AuthProps) {
                 </div>
             </div>
 
-            {/* Right Panel */}
+
             <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
                 <div className="w-full max-w-md">
                     {!showOTP ? (

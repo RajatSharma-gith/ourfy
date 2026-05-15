@@ -7,7 +7,7 @@ import jwt from 'jsonwebtoken';
 import rateLimit from 'express-rate-limit';
 const router = express.Router();
 
-// Send OTP
+// send otp
 const isValidEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
@@ -15,8 +15,8 @@ const isValidEmail = (email) => {
 
 //rate limiting
 const sendOTPRateLimit = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 5, // 5 requests per window per IP
+    windowMs: 15 * 60 * 1000, // 
+    max: 5, // 
     message: { message: 'Too many OTP requests. Please try again later.' },
     standardHeaders: true,
     legacyHeaders: false,
@@ -24,7 +24,7 @@ const sendOTPRateLimit = rateLimit({
 
 const verifyOTPRateLimit = rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: 10, // 10 verification attempts per 15 min
+    max: 10,
     message: { message: 'Too many verification attempts. Please try again later.' },
     standardHeaders: true,
     legacyHeaders: false,
@@ -74,7 +74,7 @@ router.post('/send-otp', sendOTPRateLimit, async (req, res) => {
     }
 });
 
-// Verify OTP and Login
+// verify otp and Login
 router.post('/verify-otp', verifyOTPRateLimit, async (req, res) => {
     try {
         const { email, otp } = req.body;
@@ -91,7 +91,7 @@ router.post('/verify-otp', verifyOTPRateLimit, async (req, res) => {
         const normalizedEmail = email ? email.toLowerCase().trim() : null;
 
 
-        // Find user
+        // find user
         const user = await User.findOne({
 
             email: normalizedEmail,
@@ -103,7 +103,6 @@ router.post('/verify-otp', verifyOTPRateLimit, async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        // Check if OTP exists and is not expired
         if (!user.otpExpire || new Date() > user.otpExpire) {
             return res.status(400).json({ message: 'OTP has expired. Request a new OTP.' });
         }
@@ -114,11 +113,9 @@ router.post('/verify-otp', verifyOTPRateLimit, async (req, res) => {
             return res.status(400).json({ message: 'Invalid OTP' });
         }
 
-        // Clear OTP fields after successful verification
         user.otp = null;
         user.otpExpire = null;
 
-        // Only mark verified if not already (prevents unnecessary DB writes)
         if (!user.isVerified) {
             user.isVerified = true;
         }
@@ -147,7 +144,7 @@ router.post('/verify-otp', verifyOTPRateLimit, async (req, res) => {
     }
 });
 
-// Signup (creates unverified user and sends OTP)
+
 router.post('/signup', sendOTPRateLimit, async (req, res) => {
     try {
         const { email } = req.body;
@@ -171,12 +168,12 @@ router.post('/signup', sendOTPRateLimit, async (req, res) => {
             return res.status(400).json({ message: 'Email already registered' });
         }
 
-        // Generate and hash OTP
+        // create and hash OTP
         const otp = generateOTP();
         const otpExpire = getOTPExpireTime();
         const hashedOTP = await bcryptjs.hash(otp, 10);
 
-        // Create new unverified user
+
         const user = new User({
             email: normalizedEmail,
             otp: hashedOTP,

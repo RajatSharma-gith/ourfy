@@ -71,7 +71,7 @@ export function Products() {
 
     return (
         <div className="p-6 max-w-7xl mx-auto">
-            {/* Toast */}
+
             {toast && (
                 <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-white border border-green-200 shadow-lg rounded-lg px-4 py-3 flex items-center gap-3 z-50">
                     <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
@@ -94,7 +94,7 @@ export function Products() {
                 </div>
             )}
 
-            {/* Header */}
+
             <div className="flex items-center justify-between mb-6">
                 <h1 className="text-xl font-bold text-slate-800">Products</h1>
                 <button
@@ -108,7 +108,7 @@ export function Products() {
                 </button>
             </div>
 
-            {/* Tabs */}
+
             <div className="flex gap-1 mb-6 bg-slate-100 p-1 rounded-lg w-fit">
                 <button
                     onClick={() => setActiveTab('published')}

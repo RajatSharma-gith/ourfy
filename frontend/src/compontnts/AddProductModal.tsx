@@ -50,7 +50,7 @@ export function AddProductModal({ onClose, onAdd }: AddProductModalProps) {
 
         setLoading(true);
         try {
-            await onAdd({
+            onAdd({
                 name: form.name,
                 productType: form.productType,
                 quantityStock: parseInt(form.quantityStock) || 0,
@@ -69,7 +69,7 @@ export function AddProductModal({ onClose, onAdd }: AddProductModalProps) {
     return (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={onClose}>
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
-                {/* Header */}
+
                 <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 sticky top-0 bg-white rounded-t-2xl">
                     <h2 className="text-lg font-bold text-slate-800">Add Product</h2>
                     <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-700 transition-all text-xl leading-none">&times;</button>

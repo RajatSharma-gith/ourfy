@@ -14,7 +14,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is already logged in
+
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       try {
