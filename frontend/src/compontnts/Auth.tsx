@@ -1,22 +1,7 @@
 import { useState, useRef } from 'react';
 import { authAPI } from '../services/authAPI';
-import './Auth.css';
 
 type AuthMode = 'login' | 'signup';
-
-interface LoginForm {
-    email: string;
-}
-
-interface SignupForm {
-    email: string;
-}
-
-interface OTPState {
-    email: string;
-    showOTP: boolean;
-    otp: string[];
-}
 
 interface AuthProps {
     onLoginSuccess: (user: any) => void;
@@ -24,284 +9,214 @@ interface AuthProps {
 
 export function Auth({ onLoginSuccess }: AuthProps) {
     const [mode, setMode] = useState<AuthMode>('login');
-    const [loginForm, setLoginForm] = useState<LoginForm>({ email: '' });
-    const [signupForm, setSignupForm] = useState<SignupForm>({ email: '' });
-    const [otpState, setOtpState] = useState<OTPState>({ email: '', showOTP: false, otp: ['', '', '', '', '', ''] });
+    const [email, setEmail] = useState('');
+    const [otp, setOtp] = useState(['', '', '', '', '', '']);
+    const [showOTP, setShowOTP] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [resendTimer, setResendTimer] = useState(0);
-    const otpInputRefs = useRef<(HTMLInputElement | null)[]>([]);
-
-    // Login mode handlers
-    const handleLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setLoginForm(prev => ({ ...prev, [name]: value }));
-        setError('');
-    };
-
-    const handleSendOTP = async () => {
-        if (!loginForm.email) {
-            setError('Please enter your email');
-            return;
-        }
-
-        setLoading(true);
-        setError('');
-        setSuccess('');
-
-        try {
-            await authAPI.sendOTP(loginForm.email);
-            setOtpState({
-                email: loginForm.email,
-                showOTP: true,
-                otp: ['', '', '', '', '', '']
-            });
-            setSuccess('OTP sent to your email!');
-            startResendTimer();
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Error sending OTP');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleVerifyOTP = async () => {
-        const otpCode = otpState.otp.join('');
-        if (otpCode.length !== 6) {
-            setError('Please enter all 6 digits');
-            return;
-        }
-
-        setLoading(true);
-        setError('');
-
-        try {
-            const response = await authAPI.verifyOTP(loginForm.email, otpCode);
-            setSuccess('Login successful!');
-            localStorage.setItem('token', response.data.token);
-            localStorage.setItem('user', JSON.stringify(response.data.user));
-            onLoginSuccess(response.data.user);
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Error verifying OTP');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    // Signup mode handlers
-    const handleSignupChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setSignupForm(prev => ({ ...prev, [name]: value }));
-        setError('');
-    };
-
-    const handleSignup = async () => {
-        if (!signupForm.email) {
-            setError('Email is required');
-            return;
-        }
-
-
-        setLoading(true);
-        setError('');
-        setSuccess('');
-
-        try {
-            await authAPI.signup(signupForm.email);
-            setOtpState({
-                email: signupForm.email,
-                showOTP: true,
-                otp: ['', '', '', '', '', '']
-            });
-            setSuccess('Account created! OTP sent to your email.');
-            startResendTimer();
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Error during signup');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleSignupVerifyOTP = async () => {
-        const otpCode = otpState.otp.join('');
-        if (otpCode.length !== 6) {
-            setError('Please enter all 6 digits');
-            return;
-        }
-
-        setLoading(true);
-        setError('');
-
-        try {
-            const response = await authAPI.verifyOTP(signupForm.email, otpCode);
-            setSuccess('Account verified! Logging you in...');
-            localStorage.setItem('token', response.data.token);
-            localStorage.setItem('user', JSON.stringify(response.data.user));
-            onLoginSuccess(response.data.user);
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Error verifying OTP');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    // OTP input handler
-    const handleOTPChange = (index: number, value: string) => {
-        if (!/^\d*$/.test(value)) return;
-
-        const newOtp = [...otpState.otp];
-        newOtp[index] = value.slice(-1);
-        setOtpState(prev => ({ ...prev, otp: newOtp }));
-
-        // Move to next input
-        if (value && index < 5) {
-            otpInputRefs.current[index + 1]?.focus();
-        }
-    };
-
-    const handleOTPKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Backspace' && !otpState.otp[index] && index > 0) {
-            otpInputRefs.current[index - 1]?.focus();
-        }
-    };
+    const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
 
     const startResendTimer = () => {
         setResendTimer(60);
         const interval = setInterval(() => {
             setResendTimer(prev => {
-                if (prev <= 1) {
-                    clearInterval(interval);
-                    return 0;
-                }
+                if (prev <= 1) { clearInterval(interval); return 0; }
                 return prev - 1;
             });
         }, 1000);
     };
 
+    const handleSendOTP = async () => {
+        if (!email) { setError('Please enter your email'); return; }
+        setLoading(true); setError(''); setSuccess('');
+        try {
+            await authAPI.sendOTP(email);
+            setShowOTP(true); setOtp(['', '', '', '', '', '']);
+            setSuccess('OTP sent!'); startResendTimer();
+        } catch (err: any) { setError(err.response?.data?.message || 'Error sending OTP'); }
+        finally { setLoading(false); }
+    };
+
+    const handleSignup = async () => {
+        if (!email) { setError('Email is required'); return; }
+        setLoading(true); setError(''); setSuccess('');
+        try {
+            await authAPI.signup(email);
+            setShowOTP(true); setOtp(['', '', '', '', '', '']);
+            setSuccess('Account created! OTP sent.'); startResendTimer();
+        } catch (err: any) { setError(err.response?.data?.message || 'Error during signup'); }
+        finally { setLoading(false); }
+    };
+
+    const handleVerify = async () => {
+        const code = otp.join('');
+        if (code.length !== 6) { setError('Enter all 6 digits'); return; }
+        setLoading(true); setError('');
+        try {
+            const response = await authAPI.verifyOTP(email, code);
+            localStorage.setItem('token', response.data.token);
+            localStorage.setItem('user', JSON.stringify(response.data.user));
+            onLoginSuccess(response.data.user);
+        } catch (err: any) { setError(err.response?.data?.message || 'Invalid OTP'); }
+        finally { setLoading(false); }
+    };
+
+    const handleOTPChange = (index: number, value: string) => {
+        if (!/^\d*$/.test(value)) return;
+        const newOtp = [...otp];
+        newOtp[index] = value.slice(-1);
+        setOtp(newOtp);
+        if (value && index < 5) otpRefs.current[index + 1]?.focus();
+    };
+
+    const handleKeyDown = (index: number, e: React.KeyboardEvent) => {
+        if (e.key === 'Backspace' && !otp[index] && index > 0) {
+            otpRefs.current[index - 1]?.focus();
+        }
+    };
+
     return (
-        <div className="auth-container">
-            <div className="auth-wrapper">
-                <div className="auth-left">
-                    <div className="brand-section">
-                        <h1>Productr</h1>
-                        <p>Uplist your product to market</p>
-                        <div className="brand-illustration">
-                            <div className="running-figure"></div>
+        <div className="min-h-screen flex bg-gray-50">
+            {/* Left Panel */}
+            <div className="hidden lg:flex w-1/2 relative overflow-hidden bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-50">
+                <div className="absolute top-6 left-8 flex items-center gap-2 z-10">
+                    <span className="text-xl font-bold text-slate-800">Productr</span>
+                    <span className="text-xl">🧡</span>
+                </div>
+
+                {/* Abstract 3D shapes background */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="relative w-full h-full">
+                        <div className="absolute top-20 left-20 w-64 h-64 bg-purple-200/40 rounded-full blur-3xl"></div>
+                        <div className="absolute bottom-20 right-20 w-80 h-80 bg-indigo-200/40 rounded-full blur-3xl"></div>
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                            <div className="w-72 h-96 bg-gradient-to-b from-orange-400 to-orange-600 rounded-[2rem] shadow-2xl flex flex-col items-center justify-end p-6 relative overflow-hidden">
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                                <div className="relative z-10 text-white text-center">
+                                    <p className="text-sm font-medium opacity-90">Uplist your</p>
+                                    <p className="text-sm font-medium opacity-90">product to market</p>
+                                </div>
+                                {/* Running figure silhouette */}
+                                <div className="absolute top-8 left-1/2 -translate-x-1/2 w-32 h-48">
+                                    <svg viewBox="0 0 100 140" fill="none" className="w-full h-full drop-shadow-lg">
+                                        <path d="M50 20c8 0 15-7 15-15S58 0 50 0 35 7 35 15s7 15 15 15z" fill="#1e1b4b" />
+                                        <path d="M65 35l-10 25-15-5-10 30 5 15 20-10 15 25 10-5-15-30 20-15-5-15-15 10z" fill="#1e1b4b" />
+                                    </svg>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <div className="auth-right">
-                    {!otpState.showOTP ? (
-                        <>
-                            <h2>Login to your Productr Account</h2>
+            {/* Right Panel */}
+            <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
+                <div className="w-full max-w-md">
+                    {!showOTP ? (
+                        <div className="space-y-6">
+                            <div>
+                                <h2 className="text-xl font-semibold text-slate-800 mb-6">
+                                    Login to your Productr Account
+                                </h2>
 
-                            <div className="mode-tabs">
-                                <button
-                                    className={`tab ${mode === 'login' ? 'active' : ''}`}
-                                    onClick={() => {
-                                        setMode('login');
-                                        setError('');
-                                        setSuccess('');
-                                    }}
-                                >
-                                    Login
-                                </button>
-                                <button
-                                    className={`tab ${mode === 'signup' ? 'active' : ''}`}
-                                    onClick={() => {
-                                        setMode('signup');
-                                        setError('');
-                                        setSuccess('');
-                                    }}
-                                >
-                                    Sign Up
-                                </button>
+                                <div className="flex gap-0 mb-6 bg-gray-100 p-1 rounded-lg">
+                                    <button
+                                        onClick={() => { setMode('login'); setError(''); setSuccess(''); }}
+                                        className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${mode === 'login'
+                                            ? 'bg-white text-slate-800 shadow-sm'
+                                            : 'text-slate-500 hover:text-slate-700'
+                                            }`}
+                                    >
+                                        Login
+                                    </button>
+                                    <button
+                                        onClick={() => { setMode('signup'); setError(''); setSuccess(''); }}
+                                        className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${mode === 'signup'
+                                            ? 'bg-white text-slate-800 shadow-sm'
+                                            : 'text-slate-500 hover:text-slate-700'
+                                            }`}
+                                    >
+                                        Sign Up
+                                    </button>
+                                </div>
                             </div>
 
-                            {error && <div className="alert alert-error">{error}</div>}
-                            {success && <div className="alert alert-success">{success}</div>}
-
-                            {mode === 'login' ? (
-                                <div className="form-group">
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        placeholder="Enter your email"
-                                        value={loginForm.email}
-                                        onChange={handleLoginChange}
-                                        className="input-field"
-                                    />
-
-                                    <button
-                                        className="btn btn-primary"
-                                        onClick={handleSendOTP}
-                                        disabled={loading}
-                                    >
-                                        {loading ? 'Sending OTP...' : 'Continue'}
-                                    </button>
-                                </div>
-                            ) : (
-                                <div className="form-group">
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        placeholder="Enter your email"
-                                        value={signupForm.email}
-                                        onChange={handleSignupChange}
-                                        className="input-field"
-                                    />
-
-                                    <button
-                                        className="btn btn-primary"
-                                        onClick={handleSignup}
-                                        disabled={loading}
-                                    >
-                                        {loading ? 'Creating Account...' : 'Sign Up'}
-                                    </button>
+                            {error && (
+                                <div className="bg-red-50 border-l-4 border-red-500 text-red-700 px-4 py-3 rounded text-sm">
+                                    {error}
                                 </div>
                             )}
-                        </>
+                            {success && (
+                                <div className="bg-green-50 border-l-4 border-green-500 text-green-700 px-4 py-3 rounded text-sm">
+                                    {success}
+                                </div>
+                            )}
+
+                            <div className="space-y-4">
+                                <input
+                                    type="email"
+                                    placeholder="Enter your email"
+                                    value={email}
+                                    onChange={e => { setEmail(e.target.value); setError(''); }}
+                                    className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                                />
+                                <button
+                                    onClick={mode === 'login' ? handleSendOTP : handleSignup}
+                                    disabled={loading}
+                                    className="w-full bg-indigo-900 hover:bg-indigo-800 text-white font-medium py-3 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                                >
+                                    {loading ? 'Processing...' : mode === 'login' ? 'Continue' : 'Sign Up'}
+                                </button>
+                            </div>
+                        </div>
                     ) : (
-                        <>
-                            <h2>Enter OTP</h2>
-                            <p className="otp-subtitle">We've sent an OTP to {otpState.email}</p>
+                        <div className="space-y-6">
+                            <div>
+                                <h2 className="text-xl font-semibold text-slate-800 mb-1">Enter OTP</h2>
+                                <p className="text-sm text-slate-500">We've sent an OTP to {email}</p>
+                            </div>
 
-                            {error && <div className="alert alert-error">{error}</div>}
-                            {success && <div className="alert alert-success">{success}</div>}
+                            {error && (
+                                <div className="bg-red-50 border-l-4 border-red-500 text-red-700 px-4 py-3 rounded text-sm">
+                                    {error}
+                                </div>
+                            )}
 
-                            <div className="otp-inputs">
-                                {otpState.otp.map((digit, index) => (
-                                    <input
-                                        key={index}
-                                        ref={el => { otpInputRefs.current[index] = el; }}
-                                        type="text"
-                                        maxLength={1}
-                                        value={digit}
-                                        onChange={e => handleOTPChange(index, e.target.value)}
-                                        onKeyDown={e => handleOTPKeyDown(index, e)}
-                                        className="otp-input"
-                                        placeholder="0"
-                                    />
-                                ))}
+                            <div>
+                                <label className="block text-xs font-medium text-slate-600 mb-3">Enter OTP</label>
+                                <div className="flex gap-2 justify-center">
+                                    {otp.map((digit, i) => (
+                                        <input
+                                            key={i}
+                                            ref={el => { otpRefs.current[i] = el; }}
+                                            type="text"
+                                            maxLength={1}
+                                            value={digit}
+                                            onChange={e => handleOTPChange(i, e.target.value)}
+                                            onKeyDown={e => handleKeyDown(i, e)}
+                                            className="w-12 h-12 text-center text-lg font-semibold border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                                        />
+                                    ))}
+                                </div>
                             </div>
 
                             <button
-                                className="btn btn-primary"
-                                onClick={mode === 'login' ? handleVerifyOTP : handleSignupVerifyOTP}
+                                onClick={handleVerify}
                                 disabled={loading}
+                                className="w-full bg-indigo-900 hover:bg-indigo-800 text-white font-medium py-3 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                             >
-                                {loading ? 'Verifying...' : 'Verify OTP'}
+                                {loading ? 'Verifying...' : 'Enter your OTP'}
                             </button>
 
-                            <div className="resend-section">
+                            <div className="text-center">
                                 {resendTimer > 0 ? (
-                                    <p>Resend OTP in {resendTimer}s</p>
+                                    <p className="text-xs text-slate-400">Resend in {resendTimer}s</p>
                                 ) : (
                                     <button
-                                        className="btn-link"
                                         onClick={mode === 'login' ? handleSendOTP : handleSignup}
+                                        className="text-xs text-indigo-600 hover:text-indigo-700 font-medium"
                                     >
                                         Resend OTP
                                     </button>
@@ -309,16 +224,12 @@ export function Auth({ onLoginSuccess }: AuthProps) {
                             </div>
 
                             <button
-                                className="btn-link back-btn"
-                                onClick={() => {
-                                    setOtpState({ email: '', showOTP: false, otp: ['', '', '', '', '', ''] });
-                                    setError('');
-                                    setSuccess('');
-                                }}
+                                onClick={() => { setShowOTP(false); setError(''); setSuccess(''); }}
+                                className="text-sm text-slate-500 hover:text-slate-700 flex items-center gap-1"
                             >
                                 ← Back
                             </button>
-                        </>
+                        </div>
                     )}
                 </div>
             </div>
