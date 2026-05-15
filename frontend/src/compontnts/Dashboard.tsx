@@ -63,8 +63,8 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                     <button
                         onClick={() => { setActiveMenu('home'); setIsMobileMenuOpen(false); }}
                         className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${activeMenu === 'home'
-                                ? 'bg-white/10 text-white border-l-2 border-indigo-500'
-                                : 'hover:bg-white/5 hover:text-slate-200'
+                            ? 'bg-white/10 text-white border-l-2 border-indigo-500'
+                            : 'hover:bg-white/5 hover:text-slate-200'
                             }`}
                     >
                         <span className="text-lg">🏠</span>
@@ -73,8 +73,8 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                     <button
                         onClick={() => { setActiveMenu('products'); setIsMobileMenuOpen(false); }}
                         className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${activeMenu === 'products'
-                                ? 'bg-white/10 text-white border-l-2 border-indigo-500'
-                                : 'hover:bg-white/5 hover:text-slate-200'
+                            ? 'bg-white/10 text-white border-l-2 border-indigo-500'
+                            : 'hover:bg-white/5 hover:text-slate-200'
                             }`}
                     >
                         <span className="text-lg">📦</span>
@@ -128,9 +128,9 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                         <div className="flex items-center gap-3 cursor-pointer hover:bg-slate-50 p-1.5 rounded-lg transition-colors">
                             <div className="hidden sm:block text-right">
                                 <div className="text-sm font-semibold text-slate-800 leading-tight">{user?.brand}</div>
-                                <div className="text-xs text-slate-500 leading-tight">{user?.email}</div>
+                                <div className="text-xs text-slate-600 leading-tight">{user?.email}</div>
                             </div>
-                            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center text-sm font-bold shadow-md">
+                            <div className="w-9 h-9 rounded-full bg-linear-to-br from-blue-700 to-blue-700 text-white flex items-center justify-center text-sm font-bold shadow-md">
                                 {user?.email?.[0]?.toUpperCase()}
                             </div>
                             <svg className="w-4 h-4 text-slate-400 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -143,31 +143,37 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                 {/* Content */}
                 <div className="flex-1 overflow-y-auto">
                     {activeMenu === 'home' ? (
-                        <div className="p-8 max-w-6xl">
-                            <h1 className="text-3xl font-bold text-slate-800 mb-2">Welcome to Productr</h1>
-                            <p className="text-slate-500 mb-8">Manage and publish your products to the market.</p>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <div className="bg-white rounded-2xl p-8 border border-slate-200 text-center hover:shadow-lg hover:-translate-y-1 transition-all">
-                                    <div className="text-5xl mb-4">📦</div>
-                                    <h3 className="text-lg font-bold text-slate-800 mb-2">Add Products</h3>
-                                    <p className="text-sm text-slate-500 mb-6">Create and manage your product listings</p>
-                                    <button
-                                        onClick={() => setActiveMenu('products')}
-                                        className="px-6 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-sm font-semibold rounded-lg hover:shadow-md hover:-translate-y-0.5 transition-all"
+                        <div className="min-h-screen flex items-center justify-center px-4">
+                            <div className="text-center flex flex-col items-center">
+
+                                <div className="w-16 h-16 text-blue-900 mb-4">
+                                    <svg
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="1.5"
                                     >
-                                        Go to Products
-                                    </button>
+                                        <rect x="3" y="3" width="7" height="7" rx="1.5" />
+                                        <rect x="14" y="3" width="7" height="7" rx="1.5" />
+                                        <rect x="3" y="14" width="7" height="7" rx="1.5" />
+                                        <path
+                                            d="M17.5 17.5h-3v-3h3v3zm0-3v3m-3-3h3"
+                                            strokeLinecap="round"
+                                        />
+                                    </svg>
                                 </div>
-                                <div className="bg-white rounded-2xl p-8 border border-slate-200 text-center hover:shadow-lg hover:-translate-y-1 transition-all">
-                                    <div className="text-5xl mb-4">🚀</div>
-                                    <h3 className="text-lg font-bold text-slate-800 mb-2">Publish Products</h3>
-                                    <p className="text-sm text-slate-500 mb-6">Make your products available to customers</p>
-                                </div>
-                                <div className="bg-white rounded-2xl p-8 border border-slate-200 text-center hover:shadow-lg hover:-translate-y-1 transition-all">
-                                    <div className="text-5xl mb-4">📊</div>
-                                    <h3 className="text-lg font-bold text-slate-800 mb-2">Track Sales</h3>
-                                    <p className="text-sm text-slate-500 mb-6">Monitor your product performance</p>
-                                </div>
+
+                                <h2 className="text-2xl font-semibold text-slate-700 mb-2">
+                                    Feels a little empty over here...
+                                </h2>
+
+                                <p className="text-sm text-slate-400 max-w-sm mb-6">
+                                    You can create products without connecting store.
+                                    You can add products to store anytime.
+                                </p>
+
+
+
                             </div>
                         </div>
                     ) : (

@@ -129,7 +129,7 @@ export function Products() {
             {/* Empty State */}
             {isEmpty && !loading && (
                 <div className="flex flex-col items-center justify-center py-24 text-center">
-                    <div className="w-16 h-16 text-indigo-600 mb-4">
+                    <div className="w-16 h-16 text-blue-900 mb-4">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                             <rect x="3" y="3" width="7" height="7" rx="1.5" />
                             <rect x="14" y="3" width="7" height="7" rx="1.5" />
@@ -143,7 +143,7 @@ export function Products() {
                     </p>
                     <button
                         onClick={() => setShowModal(true)}
-                        className="px-8 py-2.5 bg-linear-to-r from-blue-600 to-indigo-700 text-white text-sm font-semibold rounded-lg hover:shadow-lg hover:-translate-y-0.5 transition-all"
+                        className="px-8 py-2.5 bg-linear-to-r from-blue-800 to-blue-800 text-white text-sm font-semibold rounded-lg hover:shadow-lg hover:-translate-y-0.5 transition-all"
                     >
                         Add your Products
                     </button>
