@@ -3,5 +3,5 @@ export const generateOTP = () => {
 };
 
 export const getOTPExpireTime = () => {
-    return new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+    return new Date(Date.now() + 10 * 60 * 1000);
 };
