@@ -1,6 +1,4 @@
-
 import API from '../api/axios.ts';
-
 
 // Add auth token to requests
 API.interceptors.request.use((config) => {
