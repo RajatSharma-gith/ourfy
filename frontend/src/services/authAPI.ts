@@ -11,13 +11,13 @@ const api = axios.create({
 
 export const authAPI = {
     signup: (email: string) =>
-        api.post('/auth/signup', { email }),
+        api.post('api/auth/signup', { email }),
 
     sendOTP: (email: string) =>
-        api.post('/auth/send-otp', { email }),
+        api.post('api/auth/send-otp', { email }),
 
     verifyOTP: (email: string, otp: string) =>
-        api.post('/auth/verify-otp', { email, otp })
+        api.post('api/auth/verify-otp', { email, otp })
 };
 
 export default api;
