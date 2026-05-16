@@ -12,4 +12,4 @@ export const authAPI = {
         API.post('/auth/verify-otp', { email, otp })
 };
 
-export default authAPI;
+
