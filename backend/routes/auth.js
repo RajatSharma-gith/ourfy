@@ -190,7 +190,7 @@ router.post('/signup', sendOTPRateLimit, async (req, res) => {
         });
     } catch (error) {
         console.error('Signup error:', error);
-        res.status(500).json({ message: 'Error during signup' });
+        res.status(500).json({ message: 'Error during signup', error: error.message });
     }
 });
 
