@@ -1,16 +1,9 @@
-import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5000/api';
+import API from '../api/axios.ts';
 
-const api = axios.create({
-    baseURL: API_BASE_URL,
-    headers: {
-        'Content-Type': 'application/json'
-    }
-});
 
 // Add auth token to requests
-api.interceptors.request.use((config) => {
+API.interceptors.request.use((config) => {
     const token = localStorage.getItem('token');
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
@@ -20,25 +13,25 @@ api.interceptors.request.use((config) => {
 
 export const productAPI = {
     getAll: () =>
-        api.get('/products'),
+        API.get('/products'),
 
     getPublished: () =>
-        api.get('/products/published'),
+        API.get('/products/published'),
 
     getUnpublished: () =>
-        api.get('/products/unpublished'),
+        API.get('/products/unpublished'),
 
     create: (productData: any) =>
-        api.post('/products', productData),
+        API.post('/products', productData),
 
     update: (productId: string, productData: any) =>
-        api.put(`/products/${productId}`, productData),
+        API.put(`/products/${productId}`, productData),
 
     delete: (productId: string) =>
-        api.delete(`/products/${productId}`),
+        API.delete(`/products/${productId}`),
 
     publish: (productId: string, isPublished: boolean) =>
-        api.patch(`/products/${productId}/publish`, { isPublished })
+        API.patch(`/products/${productId}/publish`, { isPublished })
 };
 
-export default api;
+
