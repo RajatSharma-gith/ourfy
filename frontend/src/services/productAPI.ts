@@ -1,7 +1,15 @@
-import API from '../api/axios.ts';
+import axios from 'axios';
+
+const API_BASE_URL = 'https://ourfy.onrender.com/api';
+const api = axios.create({
+    baseURL: API_BASE_URL,
+    headers: {
+        'Content-Type': 'application/json'
+    }
+});
 
 // Add auth token to requests
-API.interceptors.request.use((config) => {
+api.interceptors.request.use((config) => {
     const token = localStorage.getItem('token');
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
@@ -11,25 +19,25 @@ API.interceptors.request.use((config) => {
 
 export const productAPI = {
     getAll: () =>
-        API.get('/products'),
+        api.get('/products'),
 
     getPublished: () =>
-        API.get('/products/published'),
+        api.get('/products/published'),
 
     getUnpublished: () =>
-        API.get('/products/unpublished'),
+        api.get('/products/unpublished'),
 
     create: (productData: any) =>
-        API.post('/products', productData),
+        api.post('/products', productData),
 
     update: (productId: string, productData: any) =>
-        API.put(`/products/${productId}`, productData),
+        api.put(`/products/${productId}`, productData),
 
     delete: (productId: string) =>
-        API.delete(`/products/${productId}`),
+        api.delete(`/products/${productId}`),
 
     publish: (productId: string, isPublished: boolean) =>
-        API.patch(`/products/${productId}/publish`, { isPublished })
+        api.patch(`/products/${productId}/publish`, { isPublished })
 };
 
-
+export default api;

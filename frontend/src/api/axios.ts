@@ -9,4 +9,6 @@ const API = axios.create({
 
 });
 
+console.log('ENV:', import.meta.env);
+console.log('URL:', import.meta.env.VITE_API_URL);
 export default API;
