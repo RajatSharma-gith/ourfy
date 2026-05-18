@@ -58,6 +58,7 @@ export function Auth({ onLoginSuccess }: AuthProps) {
             const response = await authAPI.verifyOTP(email, code);
             localStorage.setItem('token', response.data.token);
             localStorage.setItem('user', JSON.stringify(response.data.user));
+            console.log(`User ${response.data.user.email} logged in successfully with OTP ${code}`);
             onLoginSuccess(response.data.user);
         } catch (err: any) { setError(err.response?.data?.message || 'Invalid OTP'); }
         finally { setLoading(false); }
