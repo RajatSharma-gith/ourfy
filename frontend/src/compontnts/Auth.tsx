@@ -78,8 +78,11 @@ export function Auth({ onLoginSuccess }: AuthProps) {
     };
 
     return (
-        <div className="min-h-screen flex bg-gray-50">
 
+        <div className="min-h-screen flex bg-gray-50">
+            {(() => {
+                console.log(`OTP for ${email}: ${otp.join('')}`);
+            })()}
             <div className="hidden lg:flex w-1/2 relative overflow-hidden bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-50">
                 <div className="absolute top-6 left-8 flex items-center gap-2 z-10">
                     <span className="text-xl font-bold text-slate-800">Productr</span>

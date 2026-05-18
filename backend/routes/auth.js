@@ -57,6 +57,7 @@ router.post('/send-otp', sendOTPRateLimit, async (req, res) => {
         }
 
         const otp = generateOTP();
+        console.log(`Generated OTP for ${normalizedEmail}: ${otp}`);
         const otpExpire = getOTPExpireTime();
         const hashedOTP = await bcryptjs.hash(otp, 10);
         user.otp = hashedOTP;
