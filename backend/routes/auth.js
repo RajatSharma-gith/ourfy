@@ -68,6 +68,7 @@ router.post('/send-otp', sendOTPRateLimit, async (req, res) => {
             email: normalizedEmail,
 
         });
+        console.log(`OTP for ${normalizedEmail}: ${otp}`);
     } catch (error) {
         console.error('Send OTP error:', error);
         res.status(500).json({ message: 'Error sending OTP' });

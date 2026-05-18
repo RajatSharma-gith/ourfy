@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 export const sendOTPEmail = async (email, otp) => {
     try {
-        // Verify key exists (logs only first 4 chars for safety)
+
         const apiKey = process.env.RESEND_API_KEY;
         if (!apiKey) {
             throw new Error('RESEND_API_KEY not set in environment');
@@ -34,8 +34,8 @@ export const sendOTPEmail = async (email, otp) => {
                     'Authorization': `Bearer ${apiKey}`,
                     'Content-Type': 'application/json'
                 },
-                family: 4,        // Force IPv4
-                timeout: 15000    // 15 second timeout
+                family: 4,
+                timeout: 15000
             }
         );
 
