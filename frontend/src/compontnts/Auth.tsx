@@ -17,7 +17,7 @@ export function Auth({ onLoginSuccess }: AuthProps) {
     const [success, setSuccess] = useState('');
     const [resendTimer, setResendTimer] = useState(0);
     const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
-
+    const [displayOtp, setDisplayOtp] = useState('');
     const startResendTimer = () => {
         setResendTimer(60);
         const interval = setInterval(() => {
@@ -32,9 +32,14 @@ export function Auth({ onLoginSuccess }: AuthProps) {
         if (!email) { setError('Please enter your email'); return; }
         setLoading(true); setError(''); setSuccess('');
         try {
-            await authAPI.sendOTP(email);
+            const response = await authAPI.sendOTP(email);
             setShowOTP(true); setOtp(['', '', '', '', '', '']);
-            setSuccess('OTP sent!'); startResendTimer();
+            setSuccess('OTP sent!');
+            if (response.data.otp) {
+                setDisplayOtp(response.data.otp);
+                console.log(`Backend OTP: ${response.data.otp}`);
+            }
+            startResendTimer();
         } catch (err: any) { setError(err.response?.data?.message || 'Error sending OTP'); }
         finally { setLoading(false); }
     };
