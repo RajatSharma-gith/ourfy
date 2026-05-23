@@ -90,7 +90,7 @@ export function Auth({ onLoginSuccess }: AuthProps) {
     return (
         <div className="min-h-screen flex bg-gray-50">
             {displayOtp && (
-                <div className="fixed top-4 right-4 z-50 bg-green-50 border border-green-200 rounded-lg shadow-lg p-4 max-w-xs animate-bounce">
+                <div className="fixed top-4 right-4 z-50 bg-green-50 border border-green-200 rounded-lg shadow-lg p-4 max-w-xs">
 
                     <p className="text-xs text-green-600 mb-2">Backend generated OTP:</p>
                     <div className="bg-white rounded-md p-3 text-center border border-green-100">
