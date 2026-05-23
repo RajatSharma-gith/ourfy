@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { authAPI } from '../services/authAPI';
 
 type AuthMode = 'login' | 'signup';
@@ -77,9 +77,12 @@ export function Auth({ onLoginSuccess }: AuthProps) {
             otpRefs.current[index - 1]?.focus();
         }
     };
-
+    useEffect(() => {
+        if (showOTP) {
+            setTimeout(() => otpRefs.current[0]?.focus(), 100);
+        }
+    }, [showOTP]);
     return (
-
         <div className="min-h-screen flex bg-gray-50">
             {(() => {
                 console.log(`OTP for ${email}: ${otp.join('')}`);
@@ -89,7 +92,6 @@ export function Auth({ onLoginSuccess }: AuthProps) {
                     <span className="text-xl font-bold text-slate-800">Productr</span>
                     <span className="text-xl">🧡</span>
                 </div>
-
 
                 <div className="absolute inset-0 flex items-center justify-center">
                     <div className="relative w-full h-full">
@@ -115,124 +117,148 @@ export function Auth({ onLoginSuccess }: AuthProps) {
                 </div>
             </div>
 
+            <div className="w-full lg:w-1/2 flex items-center justify-center p-8 relative">
+                <div className="w-full max-w-md relative">
+                    {/* Main Auth Form - Always visible */}
+                    <div className="space-y-6">
+                        <div>
+                            <h2 className="text-xl font-semibold text-slate-800 mb-6">
+                                Login to your Productr Account
+                            </h2>
 
-            <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
-                <div className="w-full max-w-md">
-                    {!showOTP ? (
-                        <div className="space-y-6">
-                            <div>
-                                <h2 className="text-xl font-semibold text-slate-800 mb-6">
-                                    Login to your Productr Account
-                                </h2>
-
-                                <div className="flex gap-0 mb-6 bg-gray-100 p-1 rounded-lg">
-                                    <button
-                                        onClick={() => { setMode('login'); setError(''); setSuccess(''); }}
-                                        className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${mode === 'login'
-                                            ? 'bg-white text-slate-800 shadow-sm'
-                                            : 'text-slate-500 hover:text-slate-700'
-                                            }`}
-                                    >
-                                        Login
-                                    </button>
-                                    <button
-                                        onClick={() => { setMode('signup'); setError(''); setSuccess(''); }}
-                                        className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${mode === 'signup'
-                                            ? 'bg-white text-slate-800 shadow-sm'
-                                            : 'text-slate-500 hover:text-slate-700'
-                                            }`}
-                                    >
-                                        Sign Up
-                                    </button>
-                                </div>
-                            </div>
-
-                            {error && (
-                                <div className="bg-red-50 border-l-4 border-red-500 text-red-700 px-4 py-3 rounded text-sm">
-                                    {error}
-                                </div>
-                            )}
-                            {success && (
-                                <div className="bg-green-50 border-l-4 border-green-500 text-green-700 px-4 py-3 rounded text-sm">
-                                    {success}
-                                </div>
-                            )}
-
-                            <div className="space-y-4">
-                                <input
-                                    type="email"
-                                    placeholder="Enter your email"
-                                    value={email}
-                                    onChange={e => { setEmail(e.target.value); setError(''); }}
-                                    className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
-                                />
+                            <div className="flex gap-0 mb-6 bg-gray-100 p-1 rounded-lg">
                                 <button
-                                    onClick={mode === 'login' ? handleSendOTP : handleSignup}
-                                    disabled={loading}
-                                    className="w-full bg-indigo-900 hover:bg-indigo-800 text-white font-medium py-3 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                                    onClick={() => { setMode('login'); setError(''); setSuccess(''); }}
+                                    className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${mode === 'login'
+                                        ? 'bg-white text-slate-800 shadow-sm'
+                                        : 'text-slate-500 hover:text-slate-700'
+                                        }`}
                                 >
-                                    {loading ? 'Processing...' : mode === 'login' ? 'Continue' : 'Sign Up'}
+                                    Login
+                                </button>
+                                <button
+                                    onClick={() => { setMode('signup'); setError(''); setSuccess(''); }}
+                                    className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${mode === 'signup'
+                                        ? 'bg-white text-slate-800 shadow-sm'
+                                        : 'text-slate-500 hover:text-slate-700'
+                                        }`}
+                                >
+                                    Sign Up
                                 </button>
                             </div>
                         </div>
-                    ) : (
-                        <div className="space-y-6">
-                            <div>
-                                <h2 className="text-xl font-semibold text-slate-800 mb-1">Enter OTP</h2>
-                                <p className="text-sm text-slate-500">We've sent an OTP to {email}</p>
+
+                        {error && !showOTP && (
+                            <div className="bg-red-50 border-l-4 border-red-500 text-red-700 px-4 py-3 rounded text-sm">
+                                {error}
                             </div>
-
-                            {error && (
-                                <div className="bg-red-50 border-l-4 border-red-500 text-red-700 px-4 py-3 rounded text-sm">
-                                    {error}
-                                </div>
-                            )}
-
-                            <div>
-                                <label className="block text-xs font-medium text-slate-600 mb-3">Enter OTP</label>
-                                <div className="flex gap-2 justify-center">
-                                    {otp.map((digit, i) => (
-                                        <input
-                                            key={i}
-                                            ref={el => { otpRefs.current[i] = el; }}
-                                            type="text"
-                                            maxLength={1}
-                                            value={digit}
-                                            onChange={e => handleOTPChange(i, e.target.value)}
-                                            onKeyDown={e => handleKeyDown(i, e)}
-                                            className="w-12 h-12 text-center text-lg font-semibold border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
-                                        />
-                                    ))}
-                                </div>
+                        )}
+                        {success && !showOTP && (
+                            <div className="bg-green-50 border-l-4 border-green-500 text-green-700 px-4 py-3 rounded text-sm">
+                                {success}
                             </div>
+                        )}
 
+                        <div className="space-y-4">
+                            <input
+                                type="email"
+                                placeholder="Enter your email"
+                                value={email}
+                                onChange={e => { setEmail(e.target.value); setError(''); }}
+                                className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                                disabled={showOTP}
+                            />
                             <button
-                                onClick={handleVerify}
-                                disabled={loading}
+                                onClick={mode === 'login' ? handleSendOTP : handleSignup}
+                                disabled={loading || showOTP}
                                 className="w-full bg-indigo-900 hover:bg-indigo-800 text-white font-medium py-3 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                             >
-                                {loading ? 'Verifying...' : 'Enter your OTP'}
+                                {loading ? 'Processing...' : mode === 'login' ? 'Continue' : 'Sign Up'}
                             </button>
+                        </div>
+                    </div>
 
-                            <div className="text-center">
-                                {resendTimer > 0 ? (
-                                    <p className="text-xs text-slate-400">Resend in {resendTimer}s</p>
-                                ) : (
-                                    <button
-                                        onClick={mode === 'login' ? handleSendOTP : handleSignup}
-                                        className="text-xs text-indigo-600 hover:text-indigo-700 font-medium"
-                                    >
-                                        Resend OTP
-                                    </button>
+                    {/* OTP Popup Overlay */}
+                    {showOTP && (
+                        <div className="absolute inset-0 flex items-center justify-center z-50">
+                            {/* Backdrop */}
+                            <div className="absolute inset-0 bg-white/80 backdrop-blur-sm rounded-2xl"></div>
+
+                            {/* Popup Card */}
+                            <div className="relative bg-white rounded-2xl shadow-2xl border border-gray-100 p-8 w-full max-w-sm mx-4 animate-in fade-in zoom-in duration-200">
+                                {/* Close button */}
+                                <button
+                                    onClick={() => { setShowOTP(false); setError(''); setSuccess(''); }}
+                                    className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                    </svg>
+                                </button>
+
+                                <div className="text-center mb-6">
+                                    <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                        </svg>
+                                    </div>
+                                    <h3 className="text-lg font-semibold text-slate-800 mb-1">Enter OTP</h3>
+                                    <p className="text-sm text-slate-500">We've sent an OTP to {email}</p>
+                                </div>
+
+                                {error && (
+                                    <div className="bg-red-50 border-l-4 border-red-500 text-red-700 px-4 py-3 rounded text-sm mb-4">
+                                        {error}
+                                    </div>
                                 )}
-                            </div>
 
-                            <button
-                                onClick={() => { setShowOTP(false); setError(''); setSuccess(''); }}
-                                className="text-sm text-slate-500 hover:text-slate-700 flex items-center gap-1"
-                            >
-                                ← Back
-                            </button>
+                                <div className="mb-6">
+                                    <label className="block text-xs font-medium text-slate-600 mb-3 text-center">Enter OTP</label>
+                                    <div className="flex gap-2 justify-center">
+                                        {otp.map((digit, i) => (
+                                            <input
+                                                key={i}
+                                                ref={el => { otpRefs.current[i] = el; }}
+                                                type="text"
+                                                inputMode="numeric"
+                                                maxLength={1}
+                                                value={digit}
+                                                onChange={e => handleOTPChange(i, e.target.value)}
+                                                onKeyDown={e => handleKeyDown(i, e)}
+                                                className="w-12 h-12 text-center text-lg font-semibold border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <button
+                                    onClick={handleVerify}
+                                    disabled={loading}
+                                    className="w-full bg-indigo-900 hover:bg-indigo-800 text-white font-medium py-3 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm mb-4"
+                                >
+                                    {loading ? 'Verifying...' : 'Verify OTP'}
+                                </button>
+
+                                <div className="text-center space-y-3">
+                                    {resendTimer > 0 ? (
+                                        <p className="text-xs text-slate-400">Resend in {resendTimer}s</p>
+                                    ) : (
+                                        <button
+                                            onClick={mode === 'login' ? handleSendOTP : handleSignup}
+                                            className="text-xs text-indigo-600 hover:text-indigo-700 font-medium"
+                                        >
+                                            Resend OTP
+                                        </button>
+                                    )}
+
+                                    <button
+                                        onClick={() => { setShowOTP(false); setError(''); setSuccess(''); }}
+                                        className="block w-full text-sm text-slate-500 hover:text-slate-700 font-medium"
+                                    >
+                                        ← Back to {mode === 'login' ? 'Login' : 'Sign Up'}
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     )}
                 </div>
