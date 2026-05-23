@@ -91,19 +91,14 @@ export function Auth({ onLoginSuccess }: AuthProps) {
         <div className="min-h-screen flex bg-gray-50">
             {displayOtp && (
                 <div className="fixed top-4 right-4 z-50 bg-green-50 border border-green-200 rounded-lg shadow-lg p-4 max-w-xs animate-bounce">
-                    <div className="flex items-center gap-2 mb-2">
-                        <span className="text-green-600 text-xl">🔐</span>
-                        <span className="font-semibold text-green-800 text-sm">Development OTP</span>
-                    </div>
+
                     <p className="text-xs text-green-600 mb-2">Backend generated OTP:</p>
                     <div className="bg-white rounded-md p-3 text-center border border-green-100">
                         <span className="text-2xl font-mono font-bold text-green-700 tracking-widest">
                             {displayOtp}
                         </span>
                     </div>
-                    <p className="text-[10px] text-green-500 mt-2 text-center">
-                        Auto-fills in 2 seconds...
-                    </p>
+
                 </div>
             )}
             {(() => {
